@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JGoblin</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <h1>JGoblin</h1>
+
+  <div id="main">
+    <div class="section">
+      <h2>1. Your Profile (Stored)</h2>
+      <!-- Resume Status Indicator -->
+      <div id="resume-status" style="margin-bottom: 10px; color: green; font-weight: bold; display: none;">
+        Resume loaded from memory
+      </div>
+      
+      <label for="resume">Upload/Update Resume:</label>
+      <input type="file" id="resume" accept=".pdf,.doc,.docx,.txt">
+      <div style="display: flex; gap: 8px;">
+        <button id="readResume" style="flex: 1;">Process Resume</button>
+        <button id="clearResume" style="width: auto; padding: 2px 8px; font-size: 0.7em; background-color: #dc3545;">Clear Resume</button>
+      </div>
+      
+      <div id="resume-content" style="display: none; margin-top: 10px;">
+        <div id="resume-text" style="max-height: 60px; overflow-y: auto; border: 1px solid #eee; padding: 5px; font-size: 0.8em; background: #fafafa;"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>2. Job Details</h2>
+        <button id="clearJob" style="width: auto; padding: 2px 8px; font-size: 0.7em; background-color: #dc3545;">Clear Job Info</button>
+      </div>
+      <input type="text" id="companyName" placeholder="Company Name">
+      <input type="text" id="jobRole" placeholder="Job Role (e.g., Senior Product Manager)">
+      <textarea id="jobDescription" placeholder="Paste job description here..."></textarea>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-container">
+        <button class="tab-btn active" data-tab="tab-interview">Interview Qs</button>
+        <button class="tab-btn" data-tab="tab-coverletter">Cover Letter</button>
+    </div>
+
+    <!-- Tab 1: Interview Qs -->
+    <div id="tab-interview" class="tab-content active">
+      <div class="section">
+        <h3>Questions</h3>
+        <textarea id="questions" placeholder="Enter your questions here, one per line..."></textarea>
+        
+        <h3>Configuration</h3>
+        <label for="toneSelect">Tone:</label>
+        <div style="display: flex; gap: 8px;">
+          <select id="toneSelect" style="flex: 1;">
+            <option value="Professional">Professional (Default)</option>
+            <option value="Casual">Casual / Startup</option>
+            <option value="Enthusiastic">Enthusiastic</option>
+            <option value="Concise">Concise / Direct</option>
+            <option value="Confident">Confident</option>
+          </select>
+          <button id="addToneBtn" style="width: auto; padding: 0 12px; font-size: 1.2em; font-weight: bold; background: #e0e6ed; color: #333;">+</button>
+        </div>
+
+        <h3>Custom Instructions</h3>
+        <textarea id="customInstructions" placeholder="Add any custom instructions here..."></textarea>
+      </div>
+
+      <button id="generate" style="background-color: #007bff; font-weight: bold; height: 50px;">Generate Answers</button>
+
+      <div id="answers" class="section">
+        <h2>Generated Answers</h2>
+        <div id="answers-container"></div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Cover Letter -->
+    <div id="tab-coverletter" class="tab-content">
+        <div class="section">
+            <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">
+                Uses a 3-step AI chain (Role Deep Dive -> Draft -> Polish) to create a highly tailored, human-sounding cover letter.
+            </p>
+            <button id="generateCoverLetter" style="background-color: #8e44ad; font-weight: bold; height: 50px;">Generate Cover Letter</button>
+        </div>
+        
+        <div class="section">
+            <h2>Your Cover Letter</h2>
+            <div id="cover-letter-status" style="font-style: italic; color: #666; margin-bottom: 10px;"></div>
+            <div id="cover-letter-output" contenteditable="true" placeholder="Generated cover letter will appear here..."></div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                <button id="copyCoverLetter" style="flex: 1; background-color: #f0f2f5; color: #333; border: 1px solid #d1d5da;">Copy Text</button>
+                <button id="exportPdf" style="flex: 1; background-color: #f0f2f5; color: #333; border: 1px solid #d1d5da;">Export PDF</button>
+                <button id="exportDoc" style="flex: 1; background-color: #f0f2f5; color: #333; border: 1px solid #d1d5da;">Export DOC</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" style="border-top: 2px solid #eee; margin-top: 20px;">
+        <h2 style="cursor: pointer;" id="toggleHistory">History (Click to Toggle)</h2>
+        <div id="history-container" style="display: none;"></div>
+        <button id="clearHistory" style="margin-top: 10px; background-color: #6c757d; font-size: 0.8em;">Clear History</button>
+    </div>
+  </div>
+
+  <div id="settings">
+    <button id="settings-button">Settings</button>
+    <div id="settings-panel" style="display: none;">
+      <h2>Settings</h2>
+      <div class="section">
+        <h3>API Configuration</h3>
+        <label for="apiKey" style="font-size: 0.8em; color: #666;">Gemini API Key:</label>
+        <input type="password" id="apiKey" placeholder="Enter Gemini API Key">
+        <p style="font-size: 0.7em; color: #999; margin-top: -10px; margin-bottom: 10px;">Get key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></p>
+        
+        <label for="openaiApiKey" style="font-size: 0.8em; color: #666;">OpenAI API Key:</label>
+        <input type="password" id="openaiApiKey" placeholder="Enter OpenAI API Key">
+        <p style="font-size: 0.7em; color: #999; margin-top: -10px; margin-bottom: 10px;">Required when using GPT models. Get key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a></p>
+        
+        <label for="modelSelect" style="font-size: 0.9em;">Select Model:</label>
+        <select id="modelSelect" style="width: 100%; padding: 5px; margin-top: 5px;">
+          <optgroup label="Google Gemini">
+            <option value="gemini-exp-1206">Gemini 2.0 Flash (Exp)</option>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+            <option value="gemini-1.5-pro" selected>Gemini 1.5 Pro</option>
+            <option value="gemini-3-pro-preview">Gemini 3 Pro Preview</option>
+          </optgroup>
+          <optgroup label="OpenAI GPT">
+            <option value="gpt-4o">GPT-4o (Smartest)</option>
+            <option value="gpt-4o-mini">GPT-4o-mini (Fast)</option>
+            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="section">
+        <h3>Storage Configuration</h3>
+        <label><input type="radio" name="storage" value="local" checked> Local Storage</label>
+        <label><input type="radio" name="storage" value="google_sheets"> Google Sheets</label>
+        <div id="google-sheets-config" style="display: none;">
+          <input type="text" id="googleSheetUrl" placeholder="Google Sheet URL">
+        </div>
+      </div>
+      <button id="saveSettings" style="margin-bottom: 10px; background-color: #28a745;">Save Settings</button>
+      <div class="section">
+        <h3>Export Data</h3>
+        <button id="exportCsv">Export to CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="lib/pdf.mjs" type="module"></script>
+  <script src="lib/mammoth.browser.js"></script>
+  <script src="lib/jspdf.umd.min.js"></script>
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

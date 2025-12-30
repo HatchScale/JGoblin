@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "JGoblin",
+  "version": "1.0",
+  "description": "Helps you answer common job application questions.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "identity",
+    "sidePanel",
+    "contextMenus"
+  ],
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "action": {
+    "default_title": "Open JGoblin"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
